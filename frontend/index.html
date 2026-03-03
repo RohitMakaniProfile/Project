@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusAPI — Multi-Tenant Credit-Gated API Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<!-- Loading screen -->
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-logo">⬡ NexusAPI</div>
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     NAVBAR
+     ══════════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <a href="/" class="navbar-brand">
+    <span class="brand-icon">⬡</span>
+    <span>NexusAPI</span>
+  </a>
+  <div class="navbar-links" id="navbar-links">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#api-reference" class="nav-link">API Docs</a>
+    <a href="/docs" target="_blank" class="nav-link">Swagger</a>
+  </div>
+  <div class="navbar-auth">
+    <!-- shown when logged in -->
+    <div class="nav-user-chip" id="nav-user-chip" style="display:none">
+      <div class="nav-avatar-mini" id="nav-avatar"></div>
+      <span id="nav-user-name-display"></span>
+      <span class="nav-role-mini" id="nav-role-display"></span>
+    </div>
+    <button class="btn-outline btn-sm" id="nav-signout-btn" style="display:none" onclick="App.logout()">Sign out</button>
+    <!-- shown when logged out -->
+    <button class="btn-primary" id="nav-signin-btn" onclick="location.href='/api/auth/google'">
+      Sign in with Google
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     LANDING VIEW (shown when not authenticated)
+     ══════════════════════════════════════════════ -->
+<div id="landing-view" style="display:none">
+
+  <!-- ── Hero ── -->
+  <section class="hero" id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        Production-ready · Multi-tenant · Credit-gated
+      </div>
+      <h1 class="hero-title">
+        Build on <span class="title-accent">NexusAPI</span>.<br>Ship faster.
+      </h1>
+      <p class="hero-subtitle">
+        A fully-featured backend API platform with Google OAuth, JWT auth,
+        organisation-level credit system, async job processing, and
+        idempotency — all in one.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary btn-lg" onclick="location.href='/api/auth/google'">
+          Get started free <span class="btn-arrow">→</span>
+        </button>
+        <a href="#api-reference" class="btn-outline btn-lg">View API docs</a>
+      </div>
+    </div>
+
+    <!-- Terminal widget -->
+    <div class="hero-terminal">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <span class="tdot"></span><span class="tdot"></span><span class="tdot"></span>
+        </div>
+        <span class="terminal-title">nexusapi ~ live demo</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <div style="display:flex;align-items:center">
+          <span class="t-prompt">$</span>
+          <span class="t-cmd" id="t-cmd"></span>
+          <span class="t-cursor" id="t-cursor">▊</span>
+        </div>
+        <div class="t-output" id="t-output"></div>
+        <div class="t-next-prompt" id="t-next" style="display:none">
+          <span class="t-prompt">$</span>
+          <span class="t-cursor">▊</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stats Bar ── -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num" id="stat-endpoints">9</span>
+      <span class="stat-label">Endpoints</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">JWT</span>
+      <span class="stat-label">Authentication</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">OAuth</span>
+      <span class="stat-label">Google SSO</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Multi-Tenant</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">ARQ</span>
+      <span class="stat-label">Async Jobs</span>
+    </div>
+  </div>
+
+  <!-- ── Features ── -->
+  <section class="features-section" id="features">
+    <div class="section-header">
+      <span class="section-label">Platform</span>
+      <h2 class="section-title">Everything you need, nothing you don't</h2>
+      <p class="section-sub">Built with FastAPI · PostgreSQL · Redis · SQLAlchemy 2.0 · ARQ</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">◎</div>
+        <h3>Google OAuth 2.0</h3>
+        <p>One-click login with Google. Auto-creates organisations from email domains. First user per domain becomes admin, all others are members.</p>
+        <div class="feature-tag">Auth</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◈</div>
+        <h3>JWT Authentication</h3>
+        <p>Signed, stateless tokens with configurable expiry. Role-based access control with admin and member roles. Bearer token standard.</p>
+        <div class="feature-tag">Security</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◉</div>
+        <h3>Ledger Credit System</h3>
+        <p>Double-entry accounting with atomic deductions using SELECT FOR UPDATE row locking. Credits granted, deducted, and refunded with full audit trail.</p>
+        <div class="feature-tag">Billing</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◇</div>
+        <h3>Multi-Tenant Isolation</h3>
+        <p>Complete organisational data isolation. Each tenant owns their credit pool, job history, and user roster. No cross-tenant data leakage.</p>
+        <div class="feature-tag">Architecture</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">○</div>
+        <h3>Async Job Queue</h3>
+        <p>Background processing with ARQ and Redis. Submit jobs, get an ID immediately, poll for results. Credits deducted upfront, automatically refunded on failure.</p>
+        <div class="feature-tag">Processing</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◆</div>
+        <h3>Idempotency Keys</h3>
+        <p>Safe retries on all product endpoints. Unique constraint enforced at the DB level — submit the same key twice, pay only once, every time.</p>
+        <div class="feature-tag">Reliability</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── API Reference ── -->
+  <section class="api-section" id="api-reference">
+    <div class="section-header">
+      <span class="section-label">Documentation</span>
+      <h2 class="section-title">API Reference</h2>
+      <p class="section-sub">
+        Base URL: <code class="inline-code">http://localhost:8000</code>
+        &nbsp;·&nbsp; All responses are JSON
+        &nbsp;·&nbsp; <a href="/docs" target="_blank" style="color:var(--text-2);text-decoration:underline">Open Swagger UI →</a>
+      </p>
+    </div>
+
+    <!-- Authentication -->
+    <div class="api-group">
+      <div class="api-group-header">
+        <span class="group-dot"></span>
+        <span class="group-label">Authentication</span>
+        <span class="group-count">2 endpoints</span>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/auth/google</span>
+          <span class="endpoint-desc">Initiate Google OAuth login flow</span>
+          <span class="auth-badge">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Redirects the browser to Google's OAuth consent screen. On approval, Google sends the browser back to <code>/auth/callback</code> with an authorization code.</p>
+          <div class="endpoint-response">
+            <div class="response-label">Response</div>
+            <pre class="code-block">302 Redirect → accounts.google.com/o/oauth2/auth?...</pre>
+          </div>
+        </div>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/auth/callback</span>
+          <span class="endpoint-desc">Handle OAuth callback, return JWT token</span>
+          <span class="auth-badge">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Exchanges the Google authorization code for user info. Auto-creates an Organisation (from email domain) and User if this is a new login. First user per domain becomes <strong>admin</strong>; subsequent users are <strong>members</strong>. Returns a signed JWT.</p>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}</pre>
+          </div>
+          <div class="endpoint-errors">
+            <div class="response-label">401 · Error</div>
+            <pre class="code-block">{"detail": {"error": "google_auth_failed", "message": "..."}}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User -->
+    <div class="api-group">
+      <div class="api-group-header">
+        <span class="group-dot"></span>
+        <span class="group-label">User</span>
+        <span class="group-count">1 endpoint</span>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/me</span>
+          <span class="endpoint-desc">Get current user's profile and organisation</span>
+          <span class="auth-badge auth-required">JWT Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns the authenticated user's full profile and their organisation details. Use this to verify your token and retrieve user metadata.</p>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "user": {
+    "id": "da9706bf-b44e-460e-a8c7-f4d6bf1025b1",
+    "email": "user@company.com",
+    "name": "Jane Doe",
+    "role": "admin",
+    "organisation_id": "7f751a8a-c2d9-4a7c-a508-a96c1eef89af",
+    "created_at": "2026-01-01T00:00:00Z"
+  },
+  "organisation": {
+    "id": "7f751a8a-c2d9-4a7c-a508-a96c1eef89af",
+    "name": "Company",
+    "slug": "company-com",
+    "created_at": "2026-01-01T00:00:00Z"
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credits -->
+    <div class="api-group">
+      <div class="api-group-header">
+        <span class="group-dot"></span>
+        <span class="group-label">Credits</span>
+        <span class="group-count">2 endpoints</span>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-post">POST</span>
+          <span class="endpoint-path">/credits/grant</span>
+          <span class="endpoint-desc">Grant credits to your organisation</span>
+          <div class="endpoint-meta">
+            <span class="auth-badge auth-admin">Admin Only</span>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p>Adds credits to the organisation's ledger balance. Restricted to admin users. Creates a transaction record with the provided reason for full audit trail.</p>
+          <div class="endpoint-request">
+            <div class="response-label">Request Body</div>
+            <pre class="code-block">{
+  "amount": 100,       // positive integer, required
+  "reason": "string"   // 1–500 chars, required
+}</pre>
+          </div>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "message": "Granted 100 credits",
+  "balance": 100,
+  "transaction_id": "fe4a9ba0-531a-4e12-a9ad-11d5ae5780cf"
+}</pre>
+          </div>
+          <div class="endpoint-errors">
+            <div class="response-label">403 · Forbidden (non-admin)</div>
+            <pre class="code-block">{"detail": {"error": "forbidden", "message": "This action requires admin privileges."}}</pre>
+          </div>
+        </div>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/credits/balance</span>
+          <span class="endpoint-desc">Get balance and last 10 transactions</span>
+          <span class="auth-badge auth-required">JWT Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns the current credit balance (computed from the full ledger) and the 10 most recent transactions, ordered newest first.</p>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "organisation_id": "7f751a8a-c2d9-4a7c-a508-a96c1eef89af",
+  "balance": 275,
+  "recent_transactions": [
+    {
+      "id": "d02b2ca6-2e14-4f76-afb6-0bfe819a23cd",
+      "amount": -25,
+      "reason": "API call: /api/analyse",
+      "created_at": "2026-03-02T10:38:42Z",
+      "user_id": "da9706bf-b44e-460e-a8c7-f4d6bf1025b1"
+    }
+  ]
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products -->
+    <div class="api-group">
+      <div class="api-group-header">
+        <span class="group-dot"></span>
+        <span class="group-label">Products</span>
+        <span class="group-count">3 endpoints</span>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-post">POST</span>
+          <span class="endpoint-path">/api/analyse</span>
+          <span class="endpoint-desc">Synchronous text analysis</span>
+          <div class="endpoint-meta">
+            <span class="auth-badge auth-required">JWT Required</span>
+            <span class="cost-badge">25 credits</span>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p>Performs synchronous text analysis. Deducts 25 credits atomically using SELECT FOR UPDATE. Accepts an optional <code>Idempotency-Key</code> header — same key returns the cached result without additional charges.</p>
+          <div class="endpoint-request">
+            <div class="response-label">Request Headers &amp; Body</div>
+            <pre class="code-block">Authorization: Bearer &lt;token&gt;
+Idempotency-Key: &lt;unique-key&gt;   // optional
+
+{
+  "text": "string"    // 10–2000 characters, required
+}</pre>
+          </div>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "result": "Analysis complete. Word count: 9. Unique words: 8.",
+  "credits_remaining": 275
+}</pre>
+          </div>
+          <div class="endpoint-errors">
+            <div class="response-label">Error Responses</div>
+            <pre class="code-block">402  {"error": "insufficient_credits", "balance": 0, "required": 25}
+401  {"error": "authentication_required", "message": "..."}
+422  {"error": "validation_error", "message": "body → text: ..."}</pre>
+          </div>
+        </div>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-post">POST</span>
+          <span class="endpoint-path">/api/summarise</span>
+          <span class="endpoint-desc">Async text summarisation job</span>
+          <div class="endpoint-meta">
+            <span class="auth-badge auth-required">JWT Required</span>
+            <span class="cost-badge">10 credits</span>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p>Submits a background summarisation job via ARQ/Redis. Deducts 10 credits immediately. Returns a <code>job_id</code> — poll <code>/api/jobs/{job_id}</code> for results. Credits are automatically refunded if job fails to enqueue.</p>
+          <div class="endpoint-request">
+            <div class="response-label">Request Body</div>
+            <pre class="code-block">{
+  "text": "string"    // 10–2000 characters, required
+}</pre>
+          </div>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "job_id": "9d767976-470b-40f0-855e-0f72efded6a2",
+  "credits_remaining": 240
+}</pre>
+          </div>
+        </div>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/api/jobs/{job_id}</span>
+          <span class="endpoint-desc">Poll async job status and result</span>
+          <span class="auth-badge auth-required">JWT Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns the current status of a job. Tenant-isolated — only the organisation that created the job can retrieve it. Returns 404 for unknown or cross-tenant job IDs.</p>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Success</div>
+            <pre class="code-block">{
+  "job_id": "9d767976-470b-40f0-855e-0f72efded6a2",
+  "status": "pending",    // pending | running | completed | failed
+  "result": null,         // string when completed
+  "error": null,          // string when failed
+  "created_at": "2026-03-02T10:38:42Z"
+}</pre>
+          </div>
+          <div class="endpoint-errors">
+            <div class="response-label">404 · Not Found</div>
+            <pre class="code-block">{"detail": {"error": "job_not_found", "message": "No job found with ID ..."}}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System -->
+    <div class="api-group">
+      <div class="api-group-header">
+        <span class="group-dot"></span>
+        <span class="group-label">System</span>
+        <span class="group-count">1 endpoint</span>
+      </div>
+      <div class="api-endpoint">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <span class="method-badge method-get">GET</span>
+          <span class="endpoint-path">/health</span>
+          <span class="endpoint-desc">System health and database status</span>
+          <span class="auth-badge">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns 200 if the API is running and the database is reachable. Returns 503 if the database connection fails. Suitable for load balancer health checks.</p>
+          <div class="endpoint-response">
+            <div class="response-label">200 · Healthy</div>
+            <pre class="code-block">{
+  "status": "healthy",
+  "database": "reachable",
+  "timestamp": "2026-03-02T10:38:42.079590+00:00"
+}</pre>
+          </div>
+          <div class="endpoint-errors">
+            <div class="response-label">503 · Unhealthy</div>
+            <pre class="code-block">{"status": "unhealthy", "database": "unreachable", "timestamp": "..."}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-icon">⬡</span>
+        <span>NexusAPI</span>
+      </div>
+      <div class="footer-links">
+        <a href="/docs" target="_blank">Swagger UI</a>
+        <a href="/health" target="_blank">Health</a>
+        <a href="#features">Features</a>
+        <a href="#api-reference">API Docs</a>
+      </div>
+      <div class="footer-tech">FastAPI · PostgreSQL · Redis · SQLAlchemy 2.0</div>
+    </div>
+  </footer>
+
+</div><!-- end landing-view -->
+
+<!-- ══════════════════════════════════════════════
+     DASHBOARD VIEW (shown when authenticated)
+     ══════════════════════════════════════════════ -->
+<div id="dashboard-view" style="display:none">
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="dash-avatar">—</div>
+        <div>
+          <div class="user-name" id="dash-user-name">Loading…</div>
+          <div class="user-email" id="dash-user-email"></div>
+          <span class="user-role" id="dash-user-role"></span>
+        </div>
+      </div>
+      <div class="sidebar-org">
+        <span class="org-label">Organisation</span>
+        <span class="org-name" id="dash-org-name"></span>
+        <span class="org-slug" id="dash-org-slug"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-item active" data-tab="overview" onclick="App.switchTab('overview', this)">
+          <span class="s-icon">◎</span> Overview
+        </button>
+        <button class="sidebar-item" data-tab="credits" onclick="App.switchTab('credits', this)">
+          <span class="s-icon">◈</span> Credits
+        </button>
+        <button class="sidebar-item" data-tab="analyse" onclick="App.switchTab('analyse', this)">
+          <span class="s-icon">◉</span> Analyse
+        </button>
+        <button class="sidebar-item" data-tab="summarise" onclick="App.switchTab('summarise', this)">
+          <span class="s-icon">◇</span> Summarise
+        </button>
+        <button class="sidebar-item" data-tab="jobs" onclick="App.switchTab('jobs', this)">
+          <span class="s-icon">○</span> Jobs
+          <span class="job-count-badge" id="job-count-badge" style="display:none"></span>
+        </button>
+      </nav>
+      <button class="sidebar-signout" onclick="App.logout()">↩ Sign out</button>
+    </aside>
+
+    <!-- Main -->
+    <main class="dash-main">
+
+      <!-- ── Overview Tab ── -->
+      <div class="dash-tab active" id="tab-overview">
+        <div class="dash-header">
+          <h2>Overview</h2>
+          <button class="btn-outline btn-sm" onclick="App.loadBalance()">↻ Refresh</button>
+        </div>
+        <div class="balance-card">
+          <div class="balance-label">Credit Balance</div>
+          <div class="balance-amount" id="ov-balance">—</div>
+          <div class="balance-sub" id="ov-org-name"></div>
+        </div>
+        <div class="dash-stats">
+          <div class="dash-stat-card">
+            <div class="dash-stat-label">Total Granted</div>
+            <div class="dash-stat-val positive" id="ov-granted">—</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-label">Total Spent</div>
+            <div class="dash-stat-val negative" id="ov-spent">—</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-label">Transactions</div>
+            <div class="dash-stat-val" id="ov-txns">—</div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="card-header">Recent Transactions</div>
+          <div class="txn-list" id="ov-txn-list">
+            <div class="empty-state">No transactions yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Credits Tab ── -->
+      <div class="dash-tab" id="tab-credits">
+        <div class="dash-header"><h2>Credits</h2></div>
+        <div class="balance-card">
+          <div class="balance-label">Current Balance</div>
+          <div class="balance-amount" id="cr-balance">—</div>
+          <div class="balance-sub" id="cr-org"></div>
+        </div>
+
+        <div class="section-card" id="grant-section">
+          <div class="card-header">
+            Grant Credits
+            <span class="admin-only-badge">Admin Only</span>
+          </div>
+          <div id="grant-non-admin-notice" style="display:none">
+            <p class="section-note">Only organisation admins can grant credits. Ask your admin to grant credits to your organisation.</p>
+          </div>
+          <div id="grant-form">
+            <div class="form-group">
+              <label class="form-label">Amount</label>
+              <input type="number" id="grant-amount" class="form-input" placeholder="100" min="1" max="100000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reason</label>
+              <input type="text" id="grant-reason" class="form-input" placeholder="e.g. Monthly credit allocation">
+            </div>
+            <button class="btn-primary" id="grant-btn" onclick="App.grantCredits()">Grant Credits</button>
+            <div class="result-box" id="grant-result"></div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="card-header">Transaction History</div>
+          <div class="txn-list" id="cr-txn-list">
+            <div class="empty-state">No transactions yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Analyse Tab ── -->
+      <div class="dash-tab" id="tab-analyse">
+        <div class="dash-header">
+          <h2>Text Analysis</h2>
+          <div class="cost-info">
+            <span class="cost-badge-lg">25 credits / call</span>
+            <span class="balance-inline">Balance: <strong id="an-balance">—</strong></span>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="form-group">
+            <label class="form-label">Input Text <span class="label-hint">(10–2000 characters)</span></label>
+            <textarea id="an-text" class="form-textarea" rows="6"
+              placeholder="Enter text to analyse… (minimum 10 characters)"
+              oninput="App.updateCharCount('an-text','an-char')"></textarea>
+            <div class="char-count" id="an-char">0 / 2000</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Idempotency Key <span class="label-hint">(optional — prevents double-charges on retry)</span></label>
+            <div class="input-row">
+              <input type="text" id="an-idem" class="form-input" placeholder="Leave blank for a fresh request">
+              <button class="btn-ghost btn-sm" onclick="App.fillIdemKey('an-idem')">Generate</button>
+            </div>
+          </div>
+          <button class="btn-primary" id="an-btn" onclick="App.runAnalyse()">
+            Run Analysis <span class="btn-cost">−25 credits</span>
+          </button>
+        </div>
+        <div class="result-card" id="an-result-card" style="display:none">
+          <div class="result-card-header">
+            Result
+            <span id="an-result-meta" style="color:var(--text-4);font-size:11px"></span>
+          </div>
+          <pre class="result-pre" id="an-result-pre"></pre>
+        </div>
+      </div>
+
+      <!-- ── Summarise Tab ── -->
+      <div class="dash-tab" id="tab-summarise">
+        <div class="dash-header">
+          <h2>Text Summarisation</h2>
+          <div class="cost-info">
+            <span class="cost-badge-lg">10 credits / job</span>
+            <span class="balance-inline">Balance: <strong id="su-balance">—</strong></span>
+          </div>
+        </div>
+        <div class="section-card">
+          <p class="section-note">
+            Summarise creates an <strong>async background job</strong>. You receive a job ID instantly —
+            switch to the <strong>Jobs</strong> tab to poll for the result.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Input Text <span class="label-hint">(10–2000 characters)</span></label>
+            <textarea id="su-text" class="form-textarea" rows="6"
+              placeholder="Enter text to summarise…"
+              oninput="App.updateCharCount('su-text','su-char')"></textarea>
+            <div class="char-count" id="su-char">0 / 2000</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Idempotency Key <span class="label-hint">(optional)</span></label>
+            <div class="input-row">
+              <input type="text" id="su-idem" class="form-input" placeholder="Leave blank for a fresh request">
+              <button class="btn-ghost btn-sm" onclick="App.fillIdemKey('su-idem')">Generate</button>
+            </div>
+          </div>
+          <button class="btn-primary" id="su-btn" onclick="App.runSummarise()">
+            Submit Job <span class="btn-cost">−10 credits</span>
+          </button>
+        </div>
+        <div class="result-card" id="su-result-card" style="display:none">
+          <div class="result-card-header">Job Created</div>
+          <pre class="result-pre" id="su-result-pre"></pre>
+          <div style="padding:12px 16px;border-top:1px solid var(--border)">
+            <button class="btn-outline btn-sm" onclick="App.switchTab('jobs', document.querySelector('[data-tab=jobs]'))">
+              View job status →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Jobs Tab ── -->
+      <div class="dash-tab" id="tab-jobs">
+        <div class="dash-header">
+          <h2>Jobs</h2>
+          <button class="btn-outline btn-sm" onclick="App.refreshAllJobs()">↻ Refresh All</button>
+        </div>
+
+        <div class="section-card">
+          <div class="card-header">Look Up a Job</div>
+          <div class="input-row">
+            <input type="text" id="job-lookup-input" class="form-input"
+              placeholder="Enter job UUID (e.g. 9d767976-470b-40f0-855e-0f72efded6a2)">
+            <button class="btn-primary btn-sm" onclick="App.lookupJob()">Fetch</button>
+          </div>
+          <div class="result-card" id="job-lookup-card" style="display:none;margin-top:14px">
+            <div class="result-card-header">Job Status</div>
+            <pre class="result-pre" id="job-lookup-pre"></pre>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="card-header">
+            Session Jobs
+            <span style="margin-left:auto;font-size:12px;color:var(--text-3);font-weight:400">Jobs created this session</span>
+          </div>
+          <div id="session-jobs-list">
+            <div class="empty-state">No jobs created yet in this session</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div><!-- end dashboard-view -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="/frontend/app.js"></script>
+</body>
+</html>
