@@ -1,7 +1,6 @@
 databases:
   - name: nexusapi-db
     databaseName: nexusapi
-    user: postgres
     plan: free
 
 services:
@@ -10,6 +9,7 @@ services:
     name: nexusapi-redis
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList: []
 
   # API Web Service
   - type: web
