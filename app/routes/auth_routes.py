@@ -105,7 +105,7 @@ async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
     org = result.scalar_one_or_none()
 
     if org is None:
-        # Create a new organisation and make the user admin
+        # First user of this domain — create org and make them admin
         org = Organisation(
             id=uuid.uuid4(),
             name=domain.split(".")[0].title(),
@@ -114,9 +114,10 @@ async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
         )
         db.add(org)
         await db.flush()
-
-    # Every new user gets admin role
-    role = UserRole.admin
+        role = UserRole.admin
+    else:
+        # Org already exists — subsequent users are members
+        role = UserRole.member
 
     # Create the user
     user = User(
